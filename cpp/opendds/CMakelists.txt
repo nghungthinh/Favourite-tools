@@ -1,0 +1,53 @@
+cmake_minimum_required(VERSION 3.5)
+project(OpenDDW VERSION 0.0.1 LANGUAGES CXX)
+enable_testing()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -fpermissive -Wno-deprecated-declarations")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(OpenDDS REQUIRED)
+
+find_package(Boost 1.85.0 REQUIRED COMPONENTS thread timer chrono)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+
+# IDL TypeSupport Library
+add_library(MessengerTopic)
+opendds_target_sources(MessengerTopic
+                        ${PROJECT_SOURCE_DIR}/idl/MessengerTopic.idl
+)
+
+target_link_libraries(MessengerTopic
+                        OpenDDS::OpenDDS
+)
+
+list(APPEND PROJECT_SOURCES
+    src/user_if.cpp
+    src/DataReaderListenerImpl.cpp
+)
+
+set(OPENDDS_LIBS
+  OpenDDS::Dcps # Core OpenDDS Library
+  MessengerTopic
+  OpenDDS::OpenDDS
+)
+
+set(PROJECT_SOURCE_CODE_LIST 
+    ${PROJECT_SOURCES}
+)
+
+# USER_IF
+add_executable(
+  ${PROJECT_NAME}
+  ${PROJECT_SOURCE_CODE_LIST}
+)
+
+target_link_libraries( 
+  ${PROJECT_NAME}
+  ${OPENDDS_LIBS}
+  Boost::thread
+  Boost::timer
+  Boost::chrono
+)

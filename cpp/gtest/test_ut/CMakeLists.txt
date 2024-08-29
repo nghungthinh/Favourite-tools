@@ -32,7 +32,7 @@ set(TEST_PRJ1
 
 
 # Set ENVIRONMENT variable
-set(GTEST_LIBRARIES gtest)
+set(GTEST_LIBRARIES gtest gmock)
 
 # Add subdirectories for tests
 add_subdirectory(test_prj1)
